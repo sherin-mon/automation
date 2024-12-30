@@ -8,17 +8,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Sync website to S3
-      - name: Sync website to S3
+      - name: Sync to S3
         uses: jakejarvis/s3-sync-action@master
         with:
-          args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
-          bucket: ${{ secrets.AWS_S3_BUCKET }}  # The S3 bucket from repository secrets
-          source-dir: './website'  # Path to the directory to sync with S3
+          args: "--acl public-read"
+          bucket: ${{ secrets.AWS_S3_BUCKET }} # Use the secret key for S3 bucket
+          source-dir: "./website" # Or your desired directory
+# Path to the directory to sync with S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
