@@ -18,14 +18,12 @@ jobs:
       - name: Sync website to S3
         uses: jakejarvis/s3-sync-action@master
         with:
-           args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
-           INPUT_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-           INPUT_SOURCE_DIR: './website'  # Update this if your website files are in a specific directory
+          args: --acl public-read --follow-symlinks --delete --exclude ".git*/*" --bucket ${{ secrets.AWS_S3_BUCKET }} --source-dir './website'
         env:
-           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-           AWS_DEFAULT_REGION: us-east-1
-           
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
       # Step 3: Invalidate CloudFront cache
       - name: Invalidate CloudFront cache
         run: |
@@ -37,12 +35,11 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
 
-      # Step 4: Invalidate Cloudflare cache (No condition)
+      # Step 4: Optional - Invalidate Cloudflare cache
       - name: Invalidate Cloudflare cache
         run: |
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
