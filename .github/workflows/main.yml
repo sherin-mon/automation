@@ -37,7 +37,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
 
-      # Step 4: Invalidate Cloudflare cache
+      # Optional: Invalidate Cloudflare cache
       - name: Invalidate Cloudflare cache
         if: ${{ secrets.CLOUDFLARE_ZONE_ID && secrets.CLOUDFLARE_API_TOKEN }}
         run: |
