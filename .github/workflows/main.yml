@@ -1,4 +1,4 @@
-name: Upload Website
+name: Deploy Website
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
           bucket: ${{ secrets.AWS_S3_BUCKET }}
-          source_dir: './website' # The directory that contains your website files (change if needed)
+          source_dir: './website' # Update this if your website files are in a specific directory
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -37,7 +37,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
 
-      # Optional: Invalidate Cloudflare cache
+      # Step 4: Optional - Invalidate Cloudflare cache
       - name: Invalidate Cloudflare cache
         if: ${{ secrets.CLOUDFLARE_ZONE_ID && secrets.CLOUDFLARE_API_TOKEN }}
         run: |
