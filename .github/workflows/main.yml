@@ -39,7 +39,7 @@ jobs:
 
       # Step 4: Optional - Invalidate Cloudflare cache
       - name: Invalidate Cloudflare cache
-        if: ${{ secrets.CLOUDFLARE_ZONE_ID && secrets.CLOUDFLARE_API_TOKEN }}
+        if: ${{ secrets.CLOUDFLARE_ZONE_ID != '' && secrets.CLOUDFLARE_API_TOKEN != '' }}
         run: |
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
