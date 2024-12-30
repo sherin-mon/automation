@@ -18,14 +18,14 @@ jobs:
       - name: Sync website to S3
         uses: jakejarvis/s3-sync-action@master
         with:
-          args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
-          bucket: ${{ secrets.AWS_S3_BUCKET }}
-          source_dir: './website' # Update this if your website files are in a specific directory
+           args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
+           INPUT_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+           INPUT_SOURCE_DIR: './website'  # Update this if your website files are in a specific directory
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
-
+           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           AWS_DEFAULT_REGION: us-east-1
+           
       # Step 3: Invalidate CloudFront cache
       - name: Invalidate CloudFront cache
         run: |
