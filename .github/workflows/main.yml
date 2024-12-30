@@ -1,4 +1,5 @@
 name: Upload Website
+
 on:
   push:
     branches:
@@ -7,38 +8,40 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Step 2: Sync the website to S3
-      - name: Sync website to S3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
-          bucket: ${{ secrets.AWS_S3_BUCKET }}  # Ensure this is set correctly
-          source-dir: './website'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+    # Step 2: Sync the website to S3
+    - name: Sync Website to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete --exclude ".git*/*"
+        bucket: ${{ secrets.AWS_S3_BUCKET }}  # Ensure this is set in your GitHub Secrets
+        source-dir: './website'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1  # You can change the region if needed
 
-      # Step 3: Invalidate CloudFront cache
-      - name: Invalidate CloudFront cache
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+    # Step 3: Invalidate CloudFront cache
+    - name: Invalidate CloudFront cache
+      run: |
+        aws cloudfront create-invalidation \
+        --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+        --paths "/*"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1  # Specify your AWS region
 
-      # Optional: Invalidate Cloudflare cache (if necessary)
-      - name: Invalidate Cloudflare Cache
-        run: |
-          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}'
+    # Optional: Invalidate Cloudflare cache (if necessary)
+    - name: Invalidate Cloudflare Cache
+      run: |
+        curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+        -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+        -H "Content-Type: application/json" \
+        --data '{"purge_everything":true}'
+
