@@ -1,4 +1,5 @@
 name: Upload Website
+
 on:
   push:
     branches:
@@ -14,22 +15,24 @@ jobs:
       - name: Sync website to S3
         uses: jakejarvis/s3-sync-action@master
         with:
-         args: --acl public-read --follow-symliks --delete --exclude '.git*/*'
+          args: --acl public-read --follow-symlinks --delete --exclude '.git*/*'
         env:
-         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_DEFAULT_REGION: us-east-1
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
       # Step 3: Invalidate CloudFront cache (if needed)
       - name: Invalidate CloudFront cache
         run: |
-         aws cloudfront create-invalidation \
-           --distribution-id ${{ secretes.CLOUDFRONT_DISTRIBUTION_ID }} \
-           --paths "/*"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
         env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
       # Optional: Invalidate Cloudflare cache (if necessary)
       - name: Invalidate Cloudflare Cache
         run: |
@@ -37,5 +40,3 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
-
-
